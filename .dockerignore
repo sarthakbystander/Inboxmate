@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+*.db
+*.db-wal
+*.db-shm
+
+# App runtime data (SQLite, encryption key)
+data/
+
+# Secrets / config
+.env
+.env.local
+*.secret.key
+secret.key
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Docker
+build/

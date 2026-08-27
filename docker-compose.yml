@@ -1,0 +1,67 @@
+services:
+  inboxmate:
+    build: .
+    restart: unless-stopped
+    environment:
+      INBOXMATE_SECRET_KEY: ${INBOXMATE_SECRET_KEY:?set INBOXMATE_SECRET_KEY in .env}
+      INBOXMATE_ENCRYPTION_KEY: ${INBOXMATE_ENCRYPTION_KEY:-}
+      INBOXMATE_DATA_DIR: /app/data
+      INBOXMATE_BASE_URL: ${INBOXMATE_BASE_URL:-https://mail.example.com}
+      INBOXMATE_SESSION_HOURS: ${INBOXMATE_SESSION_HOURS:-168}
+      INBOXMATE_LOGIN_RATE_LIMIT: ${INBOXMATE_LOGIN_RATE_LIMIT:-10}
+      INBOXMATE_MAX_EMAIL_SIZE: ${INBOXMATE_MAX_EMAIL_SIZE:-3145728}
+      INBOXMATE_MAX_ATTACHMENT_SIZE: ${INBOXMATE_MAX_ATTACHMENT_SIZE:-10485760}
+      INBOXMATE_PAGE_SIZE: ${INBOXMATE_PAGE_SIZE:-50}
+      INBOXMATE_IMAP_TIMEOUT: ${INBOXMATE_IMAP_TIMEOUT:-30}
+      INBOXMATE_AI_PROVIDER: ${INBOXMATE_AI_PROVIDER:-none}
+      INBOXMATE_AI_BASE_URL: ${INBOXMATE_AI_BASE_URL:-}
+      INBOXMATE_AI_API_KEY: ${INBOXMATE_AI_API_KEY:-}
+      INBOXMATE_AI_MODEL: ${INBOXMATE_AI_MODEL:-}
+      INBOXMATE_AI_MAX_TOKENS: ${INBOXMATE_AI_MAX_TOKENS:-1000}
+      INBOXMATE_OLLAMA_URL: ${INBOXMATE_OLLAMA_URL:-http://localhost:11434}
+    volumes:
+      - inboxmate_data:/app/data
+    # Reachability for a local Ollama instance on the host.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - inboxmate_net
+    expose:
+      - "8080"
+
+  # Caddy reverse proxy (optional but recommended). Terminates TLS and forwards
+  # to InboxMate. Configure your domain in Caddyfile before first run.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - inboxmate
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - inboxmate_net
+
+  # Optional: local Ollama for the AI assistant (no API key needed).
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    profiles: ["llm"]
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - inboxmate_net
+
+volumes:
+  inboxmate_data:
+  caddy_data:
+  caddy_config:
+  ollama_data:
+
+networks:
+  inboxmate_net:

@@ -1,0 +1,105 @@
+{% extends "app.html" %}
+{% block title %} · Settings{% endblock %}
+{% block app_content %}
+<header class="topbar"><h1>Settings</h1></header>
+{% if message %}<p class="flash ok">{{ message }}</p>{% endif %}
+{% if error %}<p class="flash error">{{ error }}</p>{% endif %}
+
+<section class="settings-section">
+  <h2>Email configuration</h2>
+  <p class="muted">Credentials below are encrypted at rest and never sent to the browser.</p>
+  <form method="post" action="/settings/email" class="settings-form">
+    <input type="hidden" name="_csrf" value="{{ csrf }}">
+    <div class="grid-2">
+      <label>IMAP host
+        <input type="text" name="imap_host" value="{{ u.imap_host }}" placeholder="imap.example.com">
+      </label>
+      <label>IMAP port
+        <input type="number" name="imap_port" value="{{ u.imap_port or '' }}" placeholder="993">
+      </label>
+    </div>
+    <div class="grid-2">
+      <label>SMTP host
+        <input type="text" name="smtp_host" value="{{ u.smtp_host }}" placeholder="smtp.example.com">
+      </label>
+      <label>SMTP port
+        <input type="number" name="smtp_port" value="{{ u.smtp_port or '' }}" placeholder="587">
+      </label>
+    </div>
+    <div class="grid-2">
+      <label>Email address
+        <input type="email" name="email_address" value="{{ u.email_address }}" placeholder="you@example.com">
+      </label>
+      <label>Display name
+        <input type="text" name="display_name" value="{{ u.display_name }}" placeholder="Your Name">
+      </label>
+    </div>
+    <label class="check"><input type="checkbox" name="imap_use_ssl" {% if u.imap_use_ssl %}checked{% endif %}> Use SSL for IMAP</label>
+    <label class="check"><input type="checkbox" name="smtp_use_tls" {% if u.smtp_use_tls %}checked{% endif %}> Use TLS (STARTTLS) for SMTP</label>
+    <div class="grid-2">
+      <label>IMAP username{% if has_mail_credentials %}<span class="hint">(stored)</span>{% endif %}
+        <input type="text" name="imap_username" value="" placeholder="Leave blank to keep saved" autocomplete="off">
+      </label>
+      <label>IMAP password
+        <input type="password" name="imap_password" value="" placeholder="Leave blank to keep saved" autocomplete="new-password">
+      </label>
+    </div>
+    <label>SMTP password
+      <input type="password" name="smtp_password" value="" placeholder="Leave blank to keep saved" autocomplete="new-password">
+    </label>
+    <div class="row">
+      <button class="btn btn-primary" type="submit">Save email settings</button>
+      {% if has_mail_credentials %}
+      <button class="btn btn-ghost" type="submit" formaction="/settings/email/clear-credentials" formmethod="post">Clear saved credentials</button>
+      {% endif %}
+    </div>
+  </form>
+</section>
+
+<section class="settings-section">
+  <h2>AI provider</h2>
+  <p class="muted">Supporting OpenAI-compatible APIs and Ollama. The rest of InboxMate doesn't care which you use.</p>
+  <form method="post" action="/settings/ai" class="settings-form">
+    <input type="hidden" name="_csrf" value="{{ csrf }}">
+    <div class="grid-2">
+      <label>Provider
+        <select name="ai_provider">
+          <option value="none" {% if u.ai_provider == 'none' %}selected{% endif %}>Disabled</option>
+          <option value="openai" {% if u.ai_provider == 'openai' %}selected{% endif %}>OpenAI-compatible API</option>
+          <option value="ollama" {% if u.ai_provider == 'ollama' %}selected{% endif %}>Ollama</option>
+        </select>
+      </label>
+      <label>Model
+        <input type="text" name="ai_model" value="{{ u.ai_model }}" placeholder="gpt-4o-mini or llama3.2:3b">
+      </label>
+    </div>
+    <label>Base URL
+      <input type="text" name="ai_base_url" value="{{ u.ai_base_url }}" placeholder="https://api.openai.com/v1 or http://localhost:11434">
+    </label>
+    <div class="grid-2">
+      <label>API key{% if has_ai_key %}<span class="hint">(stored)</span>{% endif %}
+        <input type="password" name="ai_api_key" value="" placeholder="Leave blank to keep saved" autocomplete="off">
+      </label>
+      <label>Max tokens
+        <input type="number" name="ai_max_tokens" value="{{ u.ai_max_tokens or '1000' }}">
+      </label>
+    </div>
+    <div class="row">
+      <button class="btn btn-primary" type="submit">Save AI settings</button>
+      <button class="btn btn-sm" type="button" hx-post="/settings/ai/test" hx-target="#ai-test" hx-swap="innerHTML">Test connection</button>
+      {% if has_ai_key %}
+      <button class="btn btn-ghost" type="submit" formaction="/settings/ai/clear-key" formmethod="post">Remove API key</button>
+      {% endif %}
+    </div>
+    <div id="ai-test"></div>
+  </form>
+</section>
+
+<section class="settings-section">
+  <h2>Account</h2>
+  <form method="post" action="/settings/account/delete" class="settings-form" onsubmit="return confirm('Delete your account and all stored data? This cannot be undone.')">
+    <input type="hidden" name="_csrf" value="{{ csrf }}">
+    <button class="btn btn-danger" type="submit">Delete account</button>
+  </form>
+</section>
+{% endblock %}

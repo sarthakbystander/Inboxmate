@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %} · Create account{% endblock %}
+{% block body_class %}auth{% endblock %}
+{% block content %}
+<main class="auth-shell">
+  <div class="auth-card">
+    <a class="brand" href="/">InboxMate</a>
+    <h1>Create your account</h1>
+    <p class="muted">Self-hosted. No telemetry. Your email stays on your machine.</p>
+    {% if error %}<p class="flash error">{{ error }}</p>{% endif %}
+    <form method="post" action="/register">
+      <label>Email
+        <input type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+      </label>
+      <label>Password
+        <input type="password" name="password" required minlength="10" placeholder="At least 10 characters">
+      </label>
+      <label>Confirm password
+        <input type="password" name="confirm" required placeholder="Repeat your password">
+      </label>
+      <button class="btn btn-primary btn-block" type="submit">Get Started</button>
+    </form>
+    <p class="switch">Have an account? <a href="/login">Sign in</a></p>
+  </div>
+</main>
+{% endblock %}

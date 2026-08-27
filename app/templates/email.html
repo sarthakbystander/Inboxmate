@@ -1,0 +1,53 @@
+{% extends "app.html" %}
+{% block title %} · Email{% endblock %}
+{% block app_content %}
+<header class="topbar">
+  <a class="btn btn-ghost" href="/inbox">← Back</a>
+  <div class="topbar-actions">
+    <button class="btn btn-sm" id="important-btn"
+      hx-post="/email/{{ email.id }}/important" hx-target="#important-btn" hx-swap="outerHTML">
+      {{ 'Unmark important' if email.is_important else 'Mark important' }}
+    </button>
+    {% if email.classification and email.classification != 'unclassified' %}
+    <button class="btn btn-sm"
+      hx-post="/email/{{ email.id }}/classify" hx-target="#ai-box" hx-swap="innerHTML"
+      >Reclassify</button>
+    {% endif %}
+  </div>
+</header>
+
+<article class="message">
+  <div class="message-head">
+    <h1>{{ email.subject or '(no subject)' }}</h1>
+    <div class="message-meta">
+      <span class="label">From</span> {{ email.sender or 'Unknown' }}
+      {% if email.recipients %}<span class="label">To</span> {{ email.recipients }}{% endif %}
+      <span class="label">Date</span> {{ email.date }}
+    </div>
+  </div>
+
+  <div class="ai-panel" id="ai-box">
+    {% if ai_configured %}
+    <button class="btn btn-sm" hx-post="/email/{{ email.id }}/ai" hx-vals='{"kind":"summarize"}' hx-target="#ai-result" hx-swap="innerHTML">Summarize</button>
+    <button class="btn btn-sm" hx-post="/email/{{ email.id }}/ai" hx-vals='{"kind":"classify"}' hx-target="#ai-result" hx-swap="innerHTML">Classify</button>
+    <button class="btn btn-sm btn-primary" hx-post="/email/{{ email.id }}/ai" hx-vals='{"kind":"draft"}' hx-target="#ai-result" hx-swap="innerHTML">Draft reply</button>
+    {% else %}
+    <p class="muted">Enable an AI provider in <a href="/settings">Settings</a> to summarize, classify and draft replies.</p>
+    {% endif %}
+    <div id="ai-result"></div>
+  </div>
+
+  <div class="message-body">{{ sanitized_body | safe }}</div>
+
+  {% if attachments %}
+  <div class="attachments">
+    <h4>Attachments</h4>
+    <ul>
+      {% for a in attachments %}
+      <li><a href="/email/{{ email.id }}/attachment/{{ a.id }}">{{ a.filename }}</a> <span class="muted">({{ a.size }} bytes)</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</article>
+{% endblock %}

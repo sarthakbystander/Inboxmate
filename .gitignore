@@ -16,3 +16,14 @@ ENV/
 dist/
 build/
 *.egg-info/
+
+# InboxMate
+# SQLite database + WAL files
+*.db
+*.db-wal
+*.db-shm
+# Runtime data dir (contains the database and the encryption key)
+data/
+# Compiled pytest artifacts
+.pytest_cache/
+.coverage

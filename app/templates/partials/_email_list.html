@@ -1,0 +1,26 @@
+{% if error %}<p class="flash error">{{ error }}</p>{% endif %}
+{% if emails %}
+<ul class="email-list">
+  {% for e in emails %}
+  <li class="email-row {{ 'unread' if not e.is_read }}">
+    <a class="email-link" href="/email/{{ e.id }}">
+      <span class="email-sender">{{ e.sender or '(unknown sender)' }}</span>
+      <span class="email-subject">{{ e.subject or '(no subject)' }}</span>
+      <span class="email-snippet">{{ e.snippet }}</span>
+    </a>
+    <span class="email-meta">
+      {% if e.classification and e.classification != 'unclassified' %}<span class="badge">{{ e.classification }}</span>{% endif %}
+      {% if e.is_important %}<span class="star">★</span>{% endif %}
+      <time>{{ e.date }}</time>
+    </span>
+  </li>
+  {% endfor %}
+</ul>
+<nav class="pager">
+  {% if page > 1 %}<a class="btn btn-sm" href="/inbox?folder={{ folder }}&page={{ page - 1 }}&q={{ query }}">← Newer</a>{% endif %}
+  <span class="muted">Page {{ page }} of {{ pages }}</span>
+  {% if page < pages %}<a class="btn btn-sm" href="/inbox?folder={{ folder }}&page={{ page + 1 }}&q={{ query }}">Older →</a>{% endif %}
+</nav>
+{% else %}
+<p class="empty muted">No messages here yet.</p>
+{% endif %}
