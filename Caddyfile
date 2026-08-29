@@ -1,0 +1,20 @@
+# Caddy 2 reverse proxy for InboxMate.
+# Replace the site address with your real domain before first run.
+# tls is configured automatically via Let's Encrypt when the domain resolves.
+
+mail.example.com {
+    encode gzip
+
+    # Beef up security headers (HTMX/AJAX still work from same origin).
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "no-referrer"
+        -Server
+    }
+
+    reverse_proxy inboxmate:8080
+    # For local Ollama hosted as a compose service, front it too:
+    # reverse_proxy /ollama/* ollama:11434
+}

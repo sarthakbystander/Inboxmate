@@ -1,0 +1,33 @@
+{% extends "app.html" %}
+{% block title %}{% if editing %} · Edit draft{% else %} · Compose{% endif %}{% endblock %}
+{% block app_content %}
+<header class="topbar">
+  <h1>{{ 'Edit draft' if editing else 'Compose' }}</h1>
+  <a class="btn btn-ghost" href="/inbox">Cancel</a>
+</header>
+
+{% if error %}<p class="flash error">{{ error }}</p>{% endif %}
+{% if email %}<p class="muted replying">Replying to: {{ email.sender }} — {{ email.subject }}</p>{% endif %}
+
+<form method="post" action="{% if editing %}/drafts/{{ draft.id }}/update{% else %}/drafts/save{% endif %}" class="compose-form">
+  <input type="hidden" name="_csrf" value="{{ csrf }}">
+  <label>To
+    <input type="email" name="to" value="{{ to or '' }}" placeholder="recipient@example.com" required>
+  </label>
+  <label>Subject
+    <input type="text" name="subject" value="{{ draft.subject if editing and draft else '' }}" placeholder="Subject">
+  </label>
+  <label>Message
+    <textarea name="body" rows="14" required placeholder="Write your message…">{{ draft.body if editing and draft else '' }}</textarea>
+  </label>
+  <div class="row">
+    <button class="btn btn-primary" type="submit">{{ 'Save' if not editing else 'Save changes' }}</button>
+    {% if editing %}
+      <button class="btn btn-ghost" type="submit" formaction="/drafts/{{ draft.id }}/send" formmethod="post"
+              onclick="return confirm('Send this message now? Reviewed the AI draft carefully.')">Send</button>
+      <button class="btn btn-danger" type="submit" formaction="/drafts/{{ draft.id }}/delete" formmethod="post"
+              onclick="return confirm('Delete this draft?')">Delete</button>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}

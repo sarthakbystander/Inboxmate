@@ -1,0 +1,41 @@
+{% extends "app.html" %}
+{% block title %} · Inbox{% endblock %}
+{% block app_content %}
+<header class="topbar">
+  <h1>{{ folder if folder and folder != 'Inbox' else 'Inbox' }}</h1>
+  <div class="topbar-actions">
+    <form class="search" method="get" action="/inbox">
+      <input type="hidden" name="folder" value="{{ folder }}">
+      <input type="search" name="q" value="{{ query or '' }}" placeholder="Search mail…">
+    </form>
+    <a class="btn btn-primary" href="/compose">Compose</a>
+  </div>
+</header>
+
+{% if error %}<p class="flash error">{{ error }}</p>{% endif %}
+
+<div class="email-toolbar">
+  <span class="muted">{{ total }} message{% if total != 1 %}s{% endif %}</span>
+  {% if ai_configured and emails %}
+  <button class="btn btn-sm" hx-post="/inbox/classify" hx-target="#classify-status" hx-swap="innerHTML">Classify new mail</button>
+  {% endif %}
+  <span id="classify-status"></span>
+</div>
+
+<div id="app-region">
+  {% if not mail_configured and not emails %}
+  <div class="empty">
+    <h3>Connect a mailbox</h3>
+    <p>Add your IMAP/SMTP settings to start reading your inbox, or load the demo data.</p>
+    <div class="row">
+      <a class="btn btn-primary" href="/settings">Configure email</a>
+      <button class="btn btn-ghost"
+              hx-post="/inbox/sync" hx-target="#app-region" hx-swap="innerHTML"
+              hx-headers='{"X-InboxMate-Mock":"1"}'>Load demo inbox</button>
+    </div>
+  </div>
+  {% else %}
+  {% include "partials/_email_list.html" %}
+  {% endif %}
+</div>
+{% endblock %}

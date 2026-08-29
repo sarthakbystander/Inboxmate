@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block body_class %}app{% endblock %}
+{% block content %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="/inbox">InboxMate</a>
+    <nav class="side-nav">
+      <a href="/inbox" class="nav-item">Inbox{% if unread %}<span class="pill">{{ unread }}</span>{% endif %}</a>
+      <a href="/inbox?folder=Important" class="nav-item">Important</a>
+      <a href="/inbox?folder=Drafts" class="nav-item">Drafts</a>
+      <a href="/inbox?folder=Sent" class="nav-item">Sent</a>
+      <a href="/inbox?folder=Archive" class="nav-item">Archive</a>
+    </nav>
+    <div class="side-bottom">
+      <a href="/settings" class="nav-item">Settings</a>
+      <form method="post" action="/logout" style="display:inline">
+        <button class="nav-item link-btn" type="submit">Sign out</button>
+      </form>
+    </div>
+  </aside>
+  <main class="app-main">
+    {% block app_content %}{% endblock %}
+  </main>
+</div>
+<meta name="csrf-token" content="{{ user.csrf_token }}">
+<script>
+  // Forward the CSRF token on every HTMX request. Email template attributes
+  // are static, so we inject the header at dispatch time instead.
+  document.body.addEventListener('htmx:configRequest', function (evt) {
+    var tokenEl = document.querySelector('meta[name="csrf-token"]');
+    evt.detail.headers['X-CSRF-Token'] = tokenEl ? tokenEl.content : '';
+  });
+</script>
+{% endblock %}

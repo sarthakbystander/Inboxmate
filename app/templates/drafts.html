@@ -1,0 +1,27 @@
+{% extends "app.html" %}
+{% block title %} · Drafts{% endblock %}
+{% block app_content %}
+<header class="topbar">
+  <h1>Drafts</h1>
+  <div class="topbar-actions"><a class="btn btn-primary" href="/compose">New draft</a></div>
+</header>
+{% if error %}<p class="flash error">{{ error }}</p>{% endif %}
+{% if drafts %}
+<ul class="email-list">
+  {% for d in drafts %}
+  <li class="email-row">
+    <a class="email-link" href="/drafts/{{ d.id }}">
+      <span class="email-sender">{{ 'To: ' + d.to_address if d.to_address else 'No recipient' }}</span>
+      <span class="email-subject">{{ d.subject or '(no subject)' }}</span>
+    </a>
+    <span class="email-meta">
+      {% if d.is_ai_generated %}<span class="badge ghost">AI draft</span>{% endif %}
+      <time>{{ d.updated_at }}</time>
+    </span>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="empty muted">No drafts yet.</p>
+{% endif %}
+{% endblock %}

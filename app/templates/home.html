@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block body_class %}landing{% endblock %}
+{% block content %}
+<header class="nav">
+  <a class="brand" href="/">InboxMate</a>
+  <nav class="navlinks">
+    <a href="#platform">Platform</a>
+    <a href="#features">Features</a>
+    <a href="#manifesto">Manifesto</a>
+    <a href="#download">Download</a>
+    <a href="#articles">Articles</a>
+    <a class="signin" href="/login">Sign in</a>
+  </nav>
+</header>
+
+<main class="hero">
+  <div class="hero-card">
+    <span class="kicker">InboxMate</span>
+    <h1>Your inbox, without the noise.</h1>
+    <p class="sub">An open-source, private email assistant that helps you understand, organize, and respond to email.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/register">Get Started</a>
+      <a class="btn btn-ghost" href="https://github.com/sarthakbystander/Inboxmate" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+    <p class="footnote">Runs on your own hardware. Your inbox stays yours.</p>
+  </div>
+</main>
+
+<section class="feature-band" id="features">
+  <div class="feature">
+    <h3>Understand</h3>
+    <p>AI summaries and classification surface what matters and silence the rest.</p>
+  </div>
+  <div class="feature">
+    <h3>Organize</h3>
+    <p>Important, work, personal, newsletters — sorted by what deserves your attention.</p>
+  </div>
+  <div class="feature">
+    <h3>Respond</h3>
+    <p>Draft replies in seconds. You review, edit, and decide before anything is sent.</p>
+  </div>
+</section>
+
+<section class="manifesto" id="manifesto">
+  <h2>A small, serious email product.</h2>
+  <p>No cloud dependence. No telemetry. No giant bundles. A single FastAPI app, a SQLite file, and an optional local model. Self-hosted by design.</p>
+</section>
+
+<section class="download" id="download">
+  <div class="hero-card sm">
+    <h2>Download</h2>
+    <p>Deploy with Docker Compose and Caddy, or run it directly with Python.</p>
+    <a class="btn btn-primary" href="https://github.com/sarthakbystander/Inboxmate" target="_blank" rel="noopener">Get InboxMate</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>InboxMate — self-hosted, private, open source.</span>
+  <nav>
+    <a href="https://github.com/sarthakbystander/Inboxmate" target="_blank" rel="noopener">GitHub</a>
+    <a href="/login">Sign in</a>
+  </nav>
+</footer>
+{% endblock %}
